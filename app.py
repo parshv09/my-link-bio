@@ -1,6 +1,7 @@
 from flask import Flask, redirect, render_template, request, url_for
 import requests
 from bs4 import BeautifulSoup
+from urllib.parse import urlparse
 
 app = Flask(__name__)
 
@@ -40,13 +41,33 @@ def get_open_graph_metadata(url):
     }
 
     try:
-        response = requests.get(url, timeout=10)
-        response.raise_for_status()
+        parsed_url = urlparse(url)
+        if not parsed_url.scheme:
+            url = f"https://{url}"
+
+        # A browser-like user agent helps avoid some sites returning blocked/minimal HTML.
+        response = requests.get(
+            url,
+            timeout=10,
+            headers={
+                "User-Agent": (
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/123.0.0.0 Safari/537.36"
+                ),
+                "Accept": "text/html,application/xhtml+xml",
+            },
+        )
         soup = BeautifulSoup(response.text, "html.parser")
 
-        og_title = soup.find("meta", property="og:title")
-        og_description = soup.find("meta", property="og:description")
-        og_image = soup.find("meta", property="og:image")
+        # Support common Open Graph variants across sites:
+        # - property="og:*"
+        # - name="og:*"
+        og_title = soup.select_one('meta[property="og:title"], meta[name="og:title"]')
+        og_description = soup.select_one(
+            'meta[property="og:description"], meta[name="og:description"]'
+        )
+        og_image = soup.select_one('meta[property="og:image"], meta[name="og:image"]')
 
         if og_title and og_title.get("content"):
             metadata["title"] = og_title["content"].strip() or default_value
@@ -63,6 +84,15 @@ def get_open_graph_metadata(url):
     return metadata
 
 
+def normalize_url(url):
+    """Ensure URLs include a scheme."""
+    parsed_url = urlparse(url)
+    if parsed_url.scheme:
+        return url
+
+    return f"https://{url}"
+
+
 @app.route("/")
 def index():
     return render_template("index.html", links=links)
@@ -74,11 +104,12 @@ def add_link():
     url = request.form.get("url", "").strip()
 
     if site_name and url:
-        metadata = get_open_graph_metadata(url)
+        normalized_url = normalize_url(url)
+        metadata = get_open_graph_metadata(normalized_url)
         links.append(
             {
                 "name": site_name,
-                "url": url,
+                "url": normalized_url,
                 "title": metadata["title"],
                 "description": metadata["description"],
                 "image_url": metadata["image_url"],
@@ -100,8 +131,13 @@ def edit_link(link_index):
         url = request.form.get("url", "").strip()
 
         if site_name and url:
+            normalized_url = normalize_url(url)
             link["name"] = site_name
-            link["url"] = url
+            link["url"] = normalized_url
+            metadata = get_open_graph_metadata(normalized_url)
+            link["title"] = metadata["title"]
+            link["description"] = metadata["description"]
+            link["image_url"] = metadata["image_url"]
 
         return redirect(url_for("index"))
 
