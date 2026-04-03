@@ -1,12 +1,12 @@
-from flask import Flask, redirect, render_template, url_for
+from flask import Flask, redirect, render_template, request
 
 app = Flask(__name__)
 
-# In-memory link store for the current process.
+# In-memory storage for links (reset when app restarts).
 links = [
-    "https://github.com",
-    "https://www.linkedin.com",
-    "https://x.com",
+    {"name": "GitHub", "url": "https://github.com"},
+    {"name": "LinkedIn", "url": "https://www.linkedin.com"},
+    {"name": "X", "url": "https://x.com"},
 ]
 
 
@@ -21,6 +21,15 @@ def delete_link(link_index):
         links.pop(link_index)
 
     return redirect(url_for("index"))
+@app.route("/add", methods=["POST"])
+def add_link():
+    site_name = request.form.get("site_name", "").strip()
+    url = request.form.get("url", "").strip()
+
+    if site_name and url:
+        links.append({"name": site_name, "url": url})
+
+    return redirect("/")
 
 
 @app.route("/about")
