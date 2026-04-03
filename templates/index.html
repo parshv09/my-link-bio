@@ -35,5 +35,23 @@
         </div>
       </form>
     </main>
+    <a href="/about">About</a>
+    <h1>My Links</h1>
+
+    <form action="/add" method="post">
+      <label for="site_name">Site Name</label>
+      <input id="site_name" name="site_name" type="text" required>
+
+      <label for="url">URL</label>
+      <input id="url" name="url" type="url" required>
+
+      <button type="submit">Add Link</button>
+    </form>
+
+    <ul>
+      {% for link in links %}
+      <li><a href="{{ link.url }}">{{ link.name }}</a></li>
+      {% endfor %}
+    </ul>
   </body>
 </html>
