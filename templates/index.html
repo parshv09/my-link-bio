@@ -4,25 +4,36 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>My Links</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   </head>
   <body>
-    <a href="/about">About</a>
-    <h1>My Links</h1>
+    <main class="page">
+      <header class="page-header">
+        <a class="nav-link" href="/about">About</a>
+        <h1>My Links</h1>
+        <p class="subtitle">A simple, clean link-in-bio page.</p>
+      </header>
 
-    <form action="/add" method="post">
-      <label for="site_name">Site Name</label>
-      <input id="site_name" name="site_name" type="text" required>
+      <section class="stack">
+        {% for url in links %}
+        <article class="card">
+          <a class="card-link" href="{{ url }}">{{ url }}</a>
+        </article>
+        {% endfor %}
+      </section>
 
-      <label for="url">URL</label>
-      <input id="url" name="url" type="url" required>
-
-      <button type="submit">Add Link</button>
-    </form>
-
-    <ul>
-      {% for link in links %}
-      <li><a href="{{ link.url }}">{{ link.name }}</a></li>
-      {% endfor %}
-    </ul>
+      <form class="form" action="#" method="post">
+        <div class="form-row">
+          <input
+            class="input"
+            type="url"
+            name="new_link"
+            placeholder="Add a new URL"
+            aria-label="New URL"
+          >
+          <button class="button" type="submit">Add Link</button>
+        </div>
+      </form>
+    </main>
   </body>
 </html>
