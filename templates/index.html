@@ -15,24 +15,36 @@
       </header>
 
       <section class="stack">
-        {% for url in links %}
+        {% for link in links %}
         <article class="card card-row">
-          <a class="card-link" href="{{ url }}">{{ url }}</a>
-          <form method="post" action="{{ url_for('delete_link', link_index=loop.index0) }}">
-            <button class="button button-secondary" type="submit">Delete</button>
-          </form>
+          <a class="card-link" href="{{ link.url }}" target="_blank" rel="noopener noreferrer">{{ link.name }}</a>
+          <div class="actions-row">
+            <a class="button button-secondary" href="{{ url_for('edit_link', link_index=loop.index0) }}">Edit</a>
+            <form method="post" action="{{ url_for('delete_link', link_index=loop.index0) }}">
+              <button class="button button-secondary" type="submit">Delete</button>
+            </form>
+          </div>
         </article>
         {% endfor %}
       </section>
 
-      <form class="form" action="#" method="post">
+      <form class="form" action="{{ url_for('add_link') }}" method="post">
         <div class="form-row">
           <input
             class="input"
+            type="text"
+            name="site_name"
+            placeholder="Site name"
+            aria-label="Site name"
+            required
+          >
+          <input
+            class="input"
             type="url"
-            name="new_link"
-            placeholder="Add a new URL"
+            name="url"
+            placeholder="https://example.com"
             aria-label="New URL"
+            required
           >
           <button class="button" type="submit">Add Link</button>
         </div>
