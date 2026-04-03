@@ -16,8 +16,11 @@
 
       <section class="stack">
         {% for url in links %}
-        <article class="card">
+        <article class="card card-row">
           <a class="card-link" href="{{ url }}">{{ url }}</a>
+          <form method="post" action="{{ url_for('delete_link', link_index=loop.index0) }}">
+            <button class="button button-secondary" type="submit">Delete</button>
+          </form>
         </article>
         {% endfor %}
       </section>

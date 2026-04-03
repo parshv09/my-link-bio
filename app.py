@@ -15,6 +15,12 @@ def index():
     return render_template("index.html", links=links)
 
 
+@app.route("/delete/<int:link_index>", methods=["POST"])
+def delete_link(link_index):
+    if 0 <= link_index < len(links):
+        links.pop(link_index)
+
+    return redirect(url_for("index"))
 @app.route("/add", methods=["POST"])
 def add_link():
     site_name = request.form.get("site_name", "").strip()
