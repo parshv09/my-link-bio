@@ -16,9 +16,12 @@
 
       <section class="stack">
         {% for link in links %}
+        {% set has_title = link.title and link.title != 'Not Available' %}
+        {% set has_description = link.description and link.description != 'Not Available' %}
+        {% set has_image = link.image_url and link.image_url != 'Not Available' %}
         <article class="card">
           <div class="card-header-row">
-            <a class="card-link" href="{{ link.url }}" target="_blank" rel="noopener noreferrer">{{ link.name }}</a>
+            <p class="card-name">{{ link.name }}</p>
             <div class="actions-row">
               <a class="button button-secondary" href="{{ url_for('edit_link', link_index=loop.index0) }}">Edit</a>
               <form method="post" action="{{ url_for('delete_link', link_index=loop.index0) }}">
@@ -26,20 +29,33 @@
               </form>
             </div>
           </div>
+
+          {% if has_title or has_description or has_image %}
+          <div class="rich-card-content">
+            {% if has_image %}
+            <img class="card-image" src="{{ link.image_url }}" alt="Preview image for {{ link.name }}">
+            {% endif %}
+            <p class="rich-title">{{ link.title if has_title else 'Not Available' }}</p>
+            <p class="rich-description">{{ link.description if has_description else 'Not Available' }}</p>
+            <a class="card-link card-link-bottom" href="{{ link.url }}" target="_blank" rel="noopener noreferrer">{{ link.url }}</a>
+          </div>
+          {% else %}
           <div class="metadata-columns">
             <div class="metadata-column">
               <p class="metadata-label">Title</p>
-              <p class="metadata-value">{{ link.title or 'Not Available' }}</p>
+              <p class="metadata-value">Not Available</p>
             </div>
             <div class="metadata-column">
               <p class="metadata-label">Description</p>
-              <p class="metadata-value">{{ link.description or 'Not Available' }}</p>
+              <p class="metadata-value">Not Available</p>
             </div>
             <div class="metadata-column">
               <p class="metadata-label">Image URL</p>
-              <p class="metadata-value">{{ link.image_url or 'Not Available' }}</p>
+              <p class="metadata-value">Not Available</p>
             </div>
           </div>
+          <a class="card-link card-link-bottom" href="{{ link.url }}" target="_blank" rel="noopener noreferrer">{{ link.url }}</a>
+          {% endif %}
         </article>
         {% endfor %}
       </section>
