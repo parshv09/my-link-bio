@@ -4,14 +4,39 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>My Links</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   </head>
   <body>
-    <a href="/about">About</a>
-    <h1>My Links</h1>
-    <ul>
-      {% for url in links %}
-      <li><a href="{{ url }}">{{ url }}</a></li>
-      {% endfor %}
-    </ul>
+    <main class="page">
+      <header class="page-header">
+        <a class="nav-link" href="/about">About</a>
+        <h1>My Links</h1>
+        <p class="subtitle">A simple, clean link-in-bio page.</p>
+      </header>
+
+      <section class="stack">
+        {% for url in links %}
+        <article class="card card-row">
+          <a class="card-link" href="{{ url }}">{{ url }}</a>
+          <form method="post" action="{{ url_for('delete_link', link_index=loop.index0) }}">
+            <button class="button button-secondary" type="submit">Delete</button>
+          </form>
+        </article>
+        {% endfor %}
+      </section>
+
+      <form class="form" action="#" method="post">
+        <div class="form-row">
+          <input
+            class="input"
+            type="url"
+            name="new_link"
+            placeholder="Add a new URL"
+            aria-label="New URL"
+          >
+          <button class="button" type="submit">Add Link</button>
+        </div>
+      </form>
+    </main>
   </body>
 </html>
