@@ -16,13 +16,29 @@
 
       <section class="stack">
         {% for link in links %}
-        <article class="card card-row">
-          <a class="card-link" href="{{ link.url }}" target="_blank" rel="noopener noreferrer">{{ link.name }}</a>
-          <div class="actions-row">
-            <a class="button button-secondary" href="{{ url_for('edit_link', link_index=loop.index0) }}">Edit</a>
-            <form method="post" action="{{ url_for('delete_link', link_index=loop.index0) }}">
-              <button class="button button-secondary" type="submit">Delete</button>
-            </form>
+        <article class="card">
+          <div class="card-header-row">
+            <a class="card-link" href="{{ link.url }}" target="_blank" rel="noopener noreferrer">{{ link.name }}</a>
+            <div class="actions-row">
+              <a class="button button-secondary" href="{{ url_for('edit_link', link_index=loop.index0) }}">Edit</a>
+              <form method="post" action="{{ url_for('delete_link', link_index=loop.index0) }}">
+                <button class="button button-secondary" type="submit">Delete</button>
+              </form>
+            </div>
+          </div>
+          <div class="metadata-columns">
+            <div class="metadata-column">
+              <p class="metadata-label">Title</p>
+              <p class="metadata-value">{{ link.title or 'Not Available' }}</p>
+            </div>
+            <div class="metadata-column">
+              <p class="metadata-label">Description</p>
+              <p class="metadata-value">{{ link.description or 'Not Available' }}</p>
+            </div>
+            <div class="metadata-column">
+              <p class="metadata-label">Image URL</p>
+              <p class="metadata-value">{{ link.image_url or 'Not Available' }}</p>
+            </div>
           </div>
         </article>
         {% endfor %}
